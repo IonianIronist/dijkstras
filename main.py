@@ -1,4 +1,5 @@
 from network import *
+import dijkstra
 
 with open("coordinates.csv", "r") as cords:
     lines = cords.readlines()
@@ -15,5 +16,14 @@ for cords in cases[4]:
 config = [20, 25, 30, 20, 25]
 
 caseNetwork = Network(nodes, config[4])
+costs = []
+paths = []
+for i in range(len(caseNetwork.nodes)):
+    out = dijkstra.dijkstra_list(caseNetwork, i)
+    costs.append(out[0])
+    paths.append(out[1])
 print(caseNetwork.adjacency_matrix)
 print(caseNetwork.neighbor_list)
+print(costs)
+print(paths)
+
