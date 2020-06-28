@@ -11,7 +11,7 @@ class Network:
         self.nodes = nodes  # A list of objects of class Node
         self.radius = radius  # nodes' radius for connection
         self.neighbor_list = []
-        self.adjacency_matrix = [[0]*len(nodes)]*len(nodes)
+        self.adjacency_matrix = []
         self.calculate_neighbors()
         self.set_neighbor_list()
         self.set_adjacency_matrix()
@@ -30,10 +30,12 @@ class Network:
             self.neighbor_list.append(list(node.neighbors.keys()))
 
     def set_adjacency_matrix(self):
-        for node in self.nodes:
-            for i in range(len(self.nodes)):
-                if i in self.neighbor_list[node.pointer]:
-                    self.adjacency_matrix[node.pointer][i] = 1
+        for i in range(len(self.nodes)):
+            node_neighbors = [0]*len(self.nodes)
+            for neighbor in self.nodes[i].neighbors.keys():
+                node_neighbors[neighbor] = 1
+            self.adjacency_matrix.append(node_neighbors.copy())
+            node_neighbors.clear()
 
 
 class Node:
