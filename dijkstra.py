@@ -1,25 +1,46 @@
-def dijkstra_list(network, s):
-    d = [-1 for x in network.nodes]
-    path = ["-" for x in network.nodes]
-    d[s] = 0
-    queue = list(range(len(network.nodes)))
-    while len(queue) != 0:
-        next_min = d[queue[0]]
-        to_visit = queue[0]
-        for node in queue:
-            if d[node] < next_min and d[node] != -1:
-                next_min = d[node]
-                to_visit = node
-        queue.remove(to_visit)
-        visit(network, network.nodes[to_visit].pointer, d, path)
-    return d, path
+from network import *
+from time import time
+from matplotlib import pyplot as plt
+import dijkstra_matrix
+import dijkstra_list
 
-
-def visit(network, node, d, path):
-    for neighbor in network.neighbor_list[node]:
-        if d[neighbor] == -1:
-            d[neighbor] = d[node] + network.nodes[node].neighbors[neighbor]
-            path[neighbor] = node
-        elif d[neighbor] > d[node] + network.nodes[node].neighbors[neighbor]:
-            d[neighbor] = d[node] + network.nodes[node].neighbors[neighbor]
-            path[neighbor] = node
+with open("coordinates.csv", "r") as cords:
+    lines = cords.readlines()
+coordinates = []
+lines = [line.strip() for line in lines]
+for line in lines:
+    if line != 'x,y':
+        single_cords = line.split(',')
+        coordinates.append((single_cords[0], single_cords[1]))
+cases = [coordinates[:50], coordinates[50:90], coordinates[90:120], coordinates[120:140], coordinates[140:]]
+nodes = []
+configs = [20, 25, 30, 20, 25]
+times = []
+times2 = []
+for case, config in zip(cases, configs):
+    for cords in case:
+        nodes.append(Node(float(cords[0]), float(cords[1]), case.index(cords)))
+    caseNetwork = Network(nodes, config)
+    costs = []
+    start = time()
+    for s in range(len(caseNetwork.nodes)):
+        dijkstra_matrix.dijkstra_matrix(caseNetwork, s)
+    end = time()
+    delta = end - start
+    times.append(delta)
+    start2 = time()
+    for s in range(len(caseNetwork.nodes)):
+        dijkstra_list.dijkstra_list(caseNetwork, s)
+    end2 = time()
+    delta2 = end2 - start2
+    times2.append(delta2)
+    nodes.clear()
+times.reverse()
+times2.reverse()
+x = [len(i) for i in cases]
+x.reverse()
+print(times)
+print(x)
+plt.scatter([x for x in times], [n for n in x], s=10)
+plt.scatter([x for x in times2], [n for n in x], s=10)
+plt.show()
